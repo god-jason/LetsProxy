@@ -1,4 +1,4 @@
-module letsproxy
+module LetsProxy
 
 go 1.14
 

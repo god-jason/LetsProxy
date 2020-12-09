@@ -18,9 +18,9 @@ import (
 )
 
 var (
-	help bool
-	install bool
-	uninstall bool
+	help       bool
+	install    bool
+	uninstall  bool
 	configPath string
 )
 
@@ -28,12 +28,12 @@ var serviceConfig = &service.Config{
 	Name:        "CopyAuditClient",
 	DisplayName: "OpenText Copy Audit Client",
 	Description: "OpenText Copy Audit Client",
-	Arguments: nil,
+	Arguments:   nil,
 }
 
 func init() {
 	flag.BoolVar(&help, "h", false, "show help")
-	flag.StringVar(&configPath, "c", "letsproxy.yaml", "Configure path")
+	flag.StringVar(&configPath, "c", os.Args[0]+".yaml", "Configure path") //os.Args[0]+".yaml"
 	flag.BoolVar(&install, "i", false, "Install service")
 	flag.BoolVar(&uninstall, "u", false, "Uninstall service")
 
@@ -94,7 +94,6 @@ func main() {
 
 }
 
-
 type Program struct{}
 
 func (p *Program) Start(s service.Service) error {
@@ -129,7 +128,7 @@ func (p *Program) run() {
 	Serve()
 }
 
-func Serve()  {
+func Serve() {
 	var ds = make([]string, 0)
 	var dm = make(map[string][]*url.URL)
 
@@ -155,7 +154,6 @@ func Serve()  {
 		}
 	}
 
-
 	//初始化autocert
 	manager := &autocert.Manager{
 		Cache:      autocert.DirCache("certs"),
@@ -167,7 +165,7 @@ func Serve()  {
 	svr := &http.Server{
 		Addr:      "0.0.0.0:443",
 		TLSConfig: manager.TLSConfig(),
-		Handler:   &httputil.ReverseProxy{Director: func(req *http.Request) {
+		Handler: &httputil.ReverseProxy{Director: func(req *http.Request) {
 			us, ok := dm[req.Host]
 			if !ok {
 				return
@@ -175,7 +173,7 @@ func Serve()  {
 
 			var u *url.URL
 			if len(us) > 1 {
-				u = us[rand.Int() % len(us)]
+				u = us[rand.Int()%len(us)]
 			} else {
 				u = us[0]
 			}
