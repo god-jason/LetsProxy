@@ -53,6 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("配置文件", configPath)
 
 	//加载配置
 	err = LoadConfig()
@@ -141,6 +142,7 @@ func Serve() {
 
 	//解析域名
 	for domain, target := range config.Proxies {
+		log.Println("反向代理", domain, "-->", target)
 		targets := strings.Split(target, ",")
 
 		urls := make([]*url.URL, 0)
