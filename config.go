@@ -9,7 +9,6 @@ import (
 type Config struct {
 	Cache    string
 	Email    string
-	ForceRSA bool
 
 	Proxies map[string]string
 }
@@ -17,7 +16,6 @@ type Config struct {
 var config = Config{
 	Cache:    "certs",
 	Email:    "",
-	ForceRSA: false,
 	Proxies:  nil,
 }
 

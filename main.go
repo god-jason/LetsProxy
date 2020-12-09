@@ -163,7 +163,8 @@ func Serve() {
 
 	//初始化autocert
 	manager := &autocert.Manager{
-		Cache:      autocert.DirCache("certs"),
+		Cache:      autocert.DirCache(config.Cache),
+		Email:      config.Email,
 		HostPolicy: autocert.HostWhitelist(ds...),
 		Prompt:     autocert.AcceptTOS,
 	}
