@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -25,9 +26,9 @@ var (
 )
 
 var serviceConfig = &service.Config{
-	Name:        "CopyAuditClient",
-	DisplayName: "OpenText Copy Audit Client",
-	Description: "OpenText Copy Audit Client",
+	Name:        "LetsProxy",
+	DisplayName: "LetsProxy",
+	Description: "Letsencrypt & Reverse Proxy",
 	Arguments:   nil,
 }
 
@@ -47,8 +48,14 @@ func main() {
 		return
 	}
 
+	var err error
+	configPath, err = filepath.Abs(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//加载配置
-	err := LoadConfig()
+	err = LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -178,8 +185,7 @@ func Serve() {
 				u = us[0]
 			}
 
-			log.Println("Request", req.URL.String(), u.String())
-
+			//log.Println("Request", req.URL.String(), u.String())
 			req.URL.Scheme = u.Scheme
 			req.URL.Host = u.Host
 			req.URL.Path = urlJoin(u.Path, req.URL.Path) //拼接路径
@@ -191,7 +197,7 @@ func Serve() {
 				req.URL.RawQuery = u.RawQuery + "&" + req.URL.RawQuery
 			}
 
-			//设置User-Agent
+			//设置User-Agent(
 			if _, ok := req.Header["User-Agent"]; !ok {
 				// explicitly disable User-Agent so it's not set to default value
 				req.Header.Set("User-Agent", "")
