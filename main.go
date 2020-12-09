@@ -28,15 +28,15 @@ var (
 var serviceConfig = &service.Config{
 	Name:        "LetsProxy",
 	DisplayName: "LetsProxy",
-	Description: "Letsencrypt & Reverse Proxy",
+	Description: "HTTPS反向代理 内嵌Letsencrypt",
 	Arguments:   nil,
 }
 
 func init() {
-	flag.BoolVar(&help, "h", false, "show help")
-	flag.StringVar(&configPath, "c", os.Args[0]+".yaml", "Configure path") //os.Args[0]+".yaml"
-	flag.BoolVar(&install, "i", false, "Install service")
-	flag.BoolVar(&uninstall, "u", false, "Uninstall service")
+	flag.BoolVar(&help, "h", false, "帮助")
+	flag.StringVar(&configPath, "c", os.Args[0]+".yaml", "配置文件") //os.Args[0]+".yaml"
+	flag.BoolVar(&install, "i", false, "安装服务")
+	flag.BoolVar(&uninstall, "u", false, "卸载服务")
 
 	rand.Seed(time.Now().UnixNano())
 }
