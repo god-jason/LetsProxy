@@ -7,19 +7,18 @@ import (
 )
 
 type Config struct {
-	Cache    string
-	Email    string
-
+	Cache   string
+	Email   string
+	Http    bool
 	Proxies map[string]string
 }
 
 var config = Config{
-	Cache:    "certs",
-	Email:    "",
-	Proxies:  nil,
+	Cache:   "certs",
+	Proxies: nil,
 }
 
-func LoadConfig() error{
+func LoadConfig() error {
 	log.Println("加载配置")
 	filename := configPath
 	if _, err := os.Stat(filename); os.IsNotExist(err) {

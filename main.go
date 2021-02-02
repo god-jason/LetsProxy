@@ -136,6 +136,7 @@ func (p *Program) run() {
 	Serve()
 }
 
+
 func Serve() {
 	var ds = make([]string, 0)
 	var dm = make(map[string][]*url.URL)
@@ -171,41 +172,53 @@ func Serve() {
 		Prompt:     autocert.AcceptTOS,
 	}
 
+	handler := &httputil.ReverseProxy{Director: func(req *http.Request) {
+		us, ok := dm[req.Host]
+		if !ok {
+			return
+		}
+
+		var u *url.URL
+		if len(us) > 1 {
+			u = us[rand.Int()%len(us)]
+		} else {
+			u = us[0]
+		}
+
+		//log.Println("Request", req.URL.String(), u.String())
+		req.URL.Scheme = u.Scheme
+		req.URL.Host = u.Host
+		req.URL.Path = urlJoin(u.Path, req.URL.Path) //拼接路径
+
+		//添加参数
+		if u.RawQuery == "" || req.URL.RawQuery == "" {
+			req.URL.RawQuery = u.RawQuery + req.URL.RawQuery
+		} else {
+			req.URL.RawQuery = u.RawQuery + "&" + req.URL.RawQuery
+		}
+
+		//设置User-Agent(
+		if _, ok := req.Header["User-Agent"]; !ok {
+			// explicitly disable User-Agent so it's not set to default value
+			req.Header.Set("User-Agent", "")
+		}
+	}}
 	//创建server
 	svr := &http.Server{
 		Addr:      "0.0.0.0:443",
 		TLSConfig: manager.TLSConfig(),
-		Handler: &httputil.ReverseProxy{Director: func(req *http.Request) {
-			us, ok := dm[req.Host]
-			if !ok {
-				return
-			}
+		Handler: handler,
+	}
 
-			var u *url.URL
-			if len(us) > 1 {
-				u = us[rand.Int()%len(us)]
-			} else {
-				u = us[0]
+	//监听http
+	if config.Http {
+		go func() {
+			server := &http.Server{
+				Addr:      "0.0.0.0:80",
+				Handler: &redirectHandler{},
 			}
-
-			//log.Println("Request", req.URL.String(), u.String())
-			req.URL.Scheme = u.Scheme
-			req.URL.Host = u.Host
-			req.URL.Path = urlJoin(u.Path, req.URL.Path) //拼接路径
-
-			//添加参数
-			if u.RawQuery == "" || req.URL.RawQuery == "" {
-				req.URL.RawQuery = u.RawQuery + req.URL.RawQuery
-			} else {
-				req.URL.RawQuery = u.RawQuery + "&" + req.URL.RawQuery
-			}
-
-			//设置User-Agent(
-			if _, ok := req.Header["User-Agent"]; !ok {
-				// explicitly disable User-Agent so it's not set to default value
-				req.Header.Set("User-Agent", "")
-			}
-		}},
+			log.Fatal(server.ListenAndServe())
+		}()
 	}
 
 	//监听https
