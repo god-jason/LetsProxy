@@ -136,7 +136,6 @@ func (p *Program) run() {
 	Serve()
 }
 
-
 func Serve() {
 	var ds = make([]string, 0)
 	var dm = make(map[string][]*url.URL)
@@ -207,14 +206,14 @@ func Serve() {
 	svr := &http.Server{
 		Addr:      "0.0.0.0:443",
 		TLSConfig: manager.TLSConfig(),
-		Handler: handler,
+		Handler:   handler,
 	}
 
 	//监听http
 	if config.Http {
 		go func() {
 			server := &http.Server{
-				Addr:      "0.0.0.0:80",
+				Addr:    "0.0.0.0:80",
 				Handler: &redirectHandler{},
 			}
 			log.Fatal(server.ListenAndServe())
