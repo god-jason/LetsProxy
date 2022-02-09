@@ -1,5 +1,7 @@
 # LetsProxy
 
+[![CircleCI](https://circleci.com/gh/zgwit/LetsProxy/tree/master.svg?style=svg)](https://circleci.com/gh/zgwit/LetsProxy/tree/master)
+
 使用Golang开发的HTTPS反向代理，功能特点：
 1. 内嵌Let's Encrypt自动证书，
 2. 支持多组代理
